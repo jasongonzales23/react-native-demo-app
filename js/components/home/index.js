@@ -18,7 +18,8 @@ import {
 } from "native-base";
 import {
   Image,
-  ListView
+  ListView,
+  RefreshControl
 } from 'react-native';
 
 import { Grid, Row } from "react-native-easy-grid";
@@ -36,6 +37,19 @@ class Home extends Component {
     setIndex: React.PropTypes.func,
     openDrawer: React.PropTypes.func
   };
+
+  constructor(props) {
+    super(props)
+    let dataSource = new ListView.DataSource({
+      rowHasChanged: this._rowHasChanged,
+    });
+    this.state = {
+      refreshing: false,
+      dataSource: dataSource.cloneWithRows(props.list),
+    };
+    this._renderRow = this._renderRow.bind(this)
+    this._onRefresh = this._onRefresh.bind(this)
+  }
 
   fetchList() {
     return fetch("https://www.reddit.com/.json")
@@ -59,6 +73,57 @@ class Home extends Component {
     this.fetchList();
   }
 
+  componentWillReceiveProps(nextProps) {
+    console.log(nextProps)
+
+    let list = nextProps.list
+    this.setState({
+      dataSource: this.state.dataSource.cloneWithRows(list)
+    })
+  }
+
+  _rowHasChanged(oldRow, newRow) {
+    return oldRow !== newRow;
+  }
+
+  _onRefresh() {
+    this.setState({refreshing: true});
+    fetchList()
+      .then(() => {
+        this.setState({refreshing: false});
+      });
+  }
+
+  _renderRow(item) {
+    return (
+      <Row style={styles.row}>
+        <TouchableOpacity
+          onPress={() =>
+            this.props.navigation.navigate("BlankPage", {
+              name: {item}
+            })}
+        >
+          {item.data.thumbnail_width ?
+            <Image
+              style={styles.image}
+              source={{uri: item.data.thumbnail}}
+            />
+            :
+            <Image
+              style={styles.image}
+              source={{uri: "https://www.fillmurray.com/g/420/100"}}
+            />
+          }
+          <Text style={styles.text}>
+            Title: {item.data.title}{'\n'}
+            Author: {item.data.author}{'\n'}
+            Comments: {item.data.num_comments}{'\n'}
+          </Text>
+        </TouchableOpacity>
+      </Row>
+    )
+  }
+
   render() {
     console.log(DrawNav, "786785786");
     return (
@@ -71,33 +136,18 @@ class Home extends Component {
 
         <Content>
           <Grid style={styles.mt}>
-            {this.props.list.map((item, i) => (
-              <Row key={i} style={styles.row}>
-                <TouchableOpacity
-                  onPress={() =>
-                    this.props.navigation.navigate("BlankPage", {
-                      name: {item}
-                    })}
-                >
-                  {item.data.thumbnail_width ?
-                    <Image
-                      style={styles.image}
-                      source={{uri: item.data.thumbnail}}
-                    />
-                    :
-                    <Image
-                      style={styles.image}
-                      source={{uri: "https://www.fillmurray.com/g/420/100"}}
-                    />
-                  }
-                  <Text style={styles.text}>
-                    Title: {item.data.title}{'\n'}
-                    Author: {item.data.author}{'\n'}
-                    Comments: {item.data.num_comments}{'\n'}
-                  </Text>
-                </TouchableOpacity>
-              </Row>
-            ))}
+            <ListView
+              dataSource={this.state.dataSource}
+              renderRow={this._renderRow}
+              refreshControl={
+                <RefreshControl
+                  refreshing={this.state.refreshing}
+                  onRefresh={this._onRefresh}
+                  tintColor={"#000"}
+                  title={"Refreshing content..."}
+                />
+                }
+            />
           </Grid>
         </Content>
       </Container>
