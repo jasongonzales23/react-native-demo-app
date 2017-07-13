@@ -50,5 +50,3 @@ $ react-native link
 ```sh
 $ react-native run-ios
 ```
-
-Note: If you are building Native Starter Kit for first time on your system, please follow Method One to simulate on iOS. (To link the CodePush plugin through Xcode for iOS)
