@@ -19,7 +19,7 @@ import {
 import {
   Image,
   ListView,
-  RefreshControl
+  RefreshControl,
 } from 'react-native';
 
 import { Grid, Row } from "react-native-easy-grid";
@@ -43,12 +43,13 @@ class Home extends Component {
     let dataSource = new ListView.DataSource({
       rowHasChanged: this._rowHasChanged,
     });
+    this._renderRow = this._renderRow.bind(this)
+    this._onRefresh = this._onRefresh.bind(this)
+    this.fetchList = this.fetchList.bind(this)
     this.state = {
       refreshing: false,
       dataSource: dataSource.cloneWithRows(props.list),
     };
-    this._renderRow = this._renderRow.bind(this)
-    this._onRefresh = this._onRefresh.bind(this)
   }
 
   fetchList() {
@@ -87,8 +88,9 @@ class Home extends Component {
   }
 
   _onRefresh() {
+    console.log('mmmmm, refreshing....')
     this.setState({refreshing: true});
-    fetchList()
+    this.fetchList()
       .then(() => {
         this.setState({refreshing: false});
       });
@@ -126,6 +128,7 @@ class Home extends Component {
 
   render() {
     console.log(DrawNav, "786785786");
+    console.log(this.state)
     return (
       <Container style={styles.container}>
         <Header>
@@ -143,11 +146,10 @@ class Home extends Component {
                 <RefreshControl
                   refreshing={this.state.refreshing}
                   onRefresh={this._onRefresh}
-                  tintColor={"#000"}
-                  title={"Refreshing content..."}
                 />
-                }
-            />
+              }
+            >
+            </ListView>
           </Grid>
         </Content>
       </Container>
