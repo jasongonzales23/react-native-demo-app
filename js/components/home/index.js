@@ -5,19 +5,23 @@ import BlankPage2 from "../blankPage2";
 import DrawBar from "../DrawBar";
 import { DrawerNavigator, NavigationActions } from "react-navigation";
 import {
-  Container,
-  Header,
-  Title,
-  Content,
-  Text,
+  Body,
   Button,
+  Container,
+  Content,
+  Header,
   Icon,
   Left,
-  Body,
-  Right
+  Right,
+  Text,
+  Title
 } from "native-base";
-import { Grid, Row } from "react-native-easy-grid";
+import {
+  Image,
+  ListView
+} from 'react-native';
 
+import { Grid, Row } from "react-native-easy-grid";
 import { setIndex, receiveList } from "../../actions/list";
 import { openDrawer } from "../../actions/drawer";
 import styles from "./styles";
@@ -30,7 +34,6 @@ class Home extends Component {
     name: React.PropTypes.string,
     receiveList: React.PropTypes.func,
     setIndex: React.PropTypes.func,
-    //list: React.PropTypes.arrayOf(React.PropTypes.string),
     openDrawer: React.PropTypes.func
   };
 
@@ -53,7 +56,7 @@ class Home extends Component {
   }
 
   componentDidMount() {
-    this.fetchList()
+    this.fetchList();
   }
 
   render() {
@@ -69,15 +72,29 @@ class Home extends Component {
         <Content>
           <Grid style={styles.mt}>
             {this.props.list.map((item, i) => (
-              <Row key={i}>
+              <Row key={i} style={styles.row}>
                 <TouchableOpacity
-                  style={styles.row}
                   onPress={() =>
                     this.props.navigation.navigate("BlankPage", {
-                      name: { item }
+                      name: {item}
                     })}
                 >
-                  <Text style={styles.text}>{item.data.title}</Text>
+                  {item.data.thumbnail_width ?
+                    <Image
+                      style={styles.image}
+                      source={{uri: item.data.thumbnail}}
+                    />
+                    :
+                    <Image
+                      style={styles.image}
+                      source={{uri: "https://www.fillmurray.com/g/420/100"}}
+                    />
+                  }
+                  <Text style={styles.text}>
+                    Title: {item.data.title}{'\n'}
+                    Author: {item.data.author}{'\n'}
+                    Comments: {item.data.num_comments}{'\n'}
+                  </Text>
                 </TouchableOpacity>
               </Row>
             ))}

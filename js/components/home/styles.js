@@ -1,19 +1,21 @@
-
 const React = require('react-native');
 
 const { StyleSheet } = React;
+
 export default {
   container: {
     backgroundColor: '#FBFAFA',
   },
   row: {
-    flex: 1,
-    alignItems: 'center',
+    marginBottom: 32,
+  },
+  image: {
+    width: 420,
+    height: 100,
   },
   text: {
     fontSize: 20,
     marginBottom: 15,
-    alignItems: 'center',
   },
   mt: {
     marginTop: 18,

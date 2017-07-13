@@ -12,7 +12,10 @@ import {
   Right,
   Body
 } from "native-base";
-
+import { Grid, Row } from "react-native-easy-grid";
+import {
+  Image
+} from 'react-native';
 import styles from "./styles";
 
 class BlankPage extends Component {
@@ -22,12 +25,30 @@ class BlankPage extends Component {
   static propTypes = {
     name: React.PropTypes.string,
     index: React.PropTypes.number,
-    list: React.PropTypes.arrayOf(React.PropTypes.string),
     openDrawer: React.PropTypes.func
   };
 
   render() {
-    const { props: { name, index, list } } = this;
+    const {
+      props: {
+        name,
+        index,
+        list
+      }
+    } = this;
+
+    const {
+    data: {
+        title,
+        author,
+        num_comments,
+        thumbnail,
+        thumbnail_width,
+      }
+    } = this.props.navigation.state.params.name.item
+
+    console.log("NAME", this.props.navigation.state.params.name.item);
+
     console.log(this.props.navigation, "000000000");
     return (
       <Container style={styles.container}>
@@ -39,18 +60,39 @@ class BlankPage extends Component {
           </Left>
 
           <Body>
-            <Title>{name ? this.props.name : "Blank Page"}</Title>
+            <Title>{title ? title : "Detail Page"}</Title>
           </Body>
 
           <Right />
         </Header>
 
         <Content padder>
-          <Text>
-            {this.props.navigation.state.params.name.item !== undefined
-              ? this.props.navigation.state.params.name.item
-              : "Create Something Awesome . . ."}
-          </Text>
+          <Grid style={styles.mt}>
+          {this.props.navigation.state.params.name.item !== undefined ?
+            <Row>
+              {thumbnail_width ?
+                <Image
+                  style={styles.image}
+                  source={{uri: thumbnail}}
+                />
+                :
+                <Image
+                  style={styles.image}
+                  source={{uri: "https://www.fillmurray.com/g/420/100"}}
+                />
+              }
+              <Text style={styles.text}>
+                Title: {title}{'\n'}
+                Author: {author}{'\n'}
+                Comments: {num_comments}{'\n'}
+              </Text>
+            </Row>
+            :
+            <Row>
+              "Loading..."
+            </Row>
+          }
+          </Grid>
         </Content>
       </Container>
     );
