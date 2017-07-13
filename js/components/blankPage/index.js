@@ -78,7 +78,7 @@ class BlankPage extends Component {
                 :
                 <Image
                   style={styles.image}
-                  source={{uri: "https://www.fillmurray.com/g/420/100"}}
+                  source={{uri: "https://www.fillmurray.com/g/100/200"}}
                 />
               }
               <Text style={styles.text}>
