@@ -1,5 +1,5 @@
 import type { Action } from "../actions/types";
-import { SET_INDEX } from "../actions/list";
+import { SET_INDEX, RECEIVE_LIST } from "../actions/list";
 
 export type State = {
   list: string
@@ -7,12 +7,8 @@ export type State = {
 
 const initialState = {
   list: [
-    "React Native Starter Kit",
-    "React Navigation",
-    "NativeBase Easy Grid",
-    "NativeBase",
-    "CodePush",
-    "Redux"
+    {data: {title: "Something"}},
+    {data: {title: "Something Else"}}
   ],
   selectedIndex: undefined
 };
@@ -23,6 +19,9 @@ export default function(state: State = initialState, action: Action): State {
       ...state,
       selectedIndex: action.payload
     };
+  }
+  if (action.type === RECEIVE_LIST) {
+    return {...state, list: action.payload}
   }
   return state;
 }

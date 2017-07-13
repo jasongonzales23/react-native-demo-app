@@ -9,7 +9,6 @@ HomeDrawerRouter.navigationOptions = ({ navigation }) => ({
   header: null
 });
 export default (StackNav = StackNavigator({
-  Login: { screen: Login },
   Home: { screen: Home },
   BlankPage: { screen: BlankPage }
 }));

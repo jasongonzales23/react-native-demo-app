@@ -18,7 +18,7 @@ import {
 } from "native-base";
 import { Grid, Row } from "react-native-easy-grid";
 
-import { setIndex } from "../../actions/list";
+import { setIndex, receiveList } from "../../actions/list";
 import { openDrawer } from "../../actions/drawer";
 import styles from "./styles";
 
@@ -28,14 +28,32 @@ class Home extends Component {
   };
   static propTypes = {
     name: React.PropTypes.string,
+    receiveList: React.PropTypes.func,
     setIndex: React.PropTypes.func,
-    list: React.PropTypes.arrayOf(React.PropTypes.string),
+    //list: React.PropTypes.arrayOf(React.PropTypes.string),
     openDrawer: React.PropTypes.func
   };
+
+  fetchList() {
+    return fetch("https://www.reddit.com/.json")
+      .then((res) => res.json())
+      .then((json) => {
+        const list = json.data.children
+        console.log(list)
+        this.props.receiveList(list)
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 
   newPage(index) {
     this.props.setIndex(index);
     Actions.blankPage();
+  }
+
+  componentDidMount() {
+    this.fetchList()
   }
 
   render() {
@@ -43,37 +61,11 @@ class Home extends Component {
     return (
       <Container style={styles.container}>
         <Header>
-          <Left>
-
-            <Button
-              transparent
-              onPress={() => {
-                DrawerNav.dispatch(
-                  NavigationActions.reset({
-                    index: 0,
-                    actions: [NavigationActions.navigate({ routeName: "Home" })]
-                  })
-                );
-                DrawerNav.goBack();
-              }}
-            >
-              <Icon active name="power" />
-            </Button>
-          </Left>
-
           <Body>
             <Title>Home</Title>
           </Body>
-
-          <Right>
-            <Button
-              transparent
-              onPress={() => DrawerNav.navigate("DrawerOpen")}
-            >
-              <Icon active name="menu" />
-            </Button>
-          </Right>
         </Header>
+
         <Content>
           <Grid style={styles.mt}>
             {this.props.list.map((item, i) => (
@@ -85,7 +77,7 @@ class Home extends Component {
                       name: { item }
                     })}
                 >
-                  <Text style={styles.text}>{item}</Text>
+                  <Text style={styles.text}>{item.data.title}</Text>
                 </TouchableOpacity>
               </Row>
             ))}
@@ -98,6 +90,7 @@ class Home extends Component {
 
 function bindAction(dispatch) {
   return {
+    receiveList: list => dispatch(receiveList(list)),
     setIndex: index => dispatch(setIndex(index)),
     openDrawer: () => dispatch(openDrawer())
   };
